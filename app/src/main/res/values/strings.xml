@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">gitHub</string>
+    <string name="baseUrl">https://api.github.com/</string>
+    <string name="download_page">Download page</string>
+    <string name="no_call">Not successful preparing call</string>
+    <string name="no_connect">Please, set connect to Internet</string>
+    <string name="not_loading_data">No loading data</string>
+</resources>
