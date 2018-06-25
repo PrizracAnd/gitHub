@@ -7,9 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +32,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @BindView(R.id.btnLoad)
     Button buttonLoad;
+
+    @BindView(R.id.imageView)
+    ImageView imageView;
 
     private Presenter presenter;
 
@@ -52,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void startLoad() {
         progressBar.setVisibility(View.VISIBLE);
         textView.setVisibility(View.GONE);
+        imageView.setVisibility(View.GONE);
     }
 
     @Override
@@ -82,6 +89,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void setData() {
+        textView.setText(getResources().getString(R.string.user_id) + presenter.getDataUserID());
+        Glide.with(this)
+                .load(presenter.getDataUserAvatarUrl())
+                .into(imageView);
+        imageView.setVisibility(View.VISIBLE);
 
     }
 

@@ -115,4 +115,31 @@ public class Presenter {
         this.userModel.shred();
     }
 
+
+    /////////////////////////////////////////////////////
+    // Methods getData
+    ////////////////////////////////////////////////////
+    //-----Begin-----------------------------------------
+    //-----Get Data of user begin------------------------
+    public String getDataUserLogin(){
+        if(this.listRetrofitModel.size() > 0){
+            return this.listRetrofitModel.get(0).getLogin();
+        }else return null;
+    }
+
+    public String getDataUserID(){
+        if(this.listRetrofitModel.size() > 0){
+            return this.listRetrofitModel.get(0).getId();
+        }else return null;
+    }
+
+    public String getDataUserAvatarUrl(){
+        if(this.listRetrofitModel.size() > 0){
+            return this.listRetrofitModel.get(0).getAvatarUrl();
+        }else return null;
+    }
+    //-----Get Data of user end--------------------------
+
+    //-----End-------------------------------------------
+
 }

@@ -5,4 +5,5 @@
     <string name="no_call">Not successful preparing call</string>
     <string name="no_connect">Please, set connect to Internet</string>
     <string name="not_loading_data">No loading data</string>
+    <string name="user_id">UserID:</string>
 </resources>
