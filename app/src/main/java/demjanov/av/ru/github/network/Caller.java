@@ -129,7 +129,7 @@ public class Caller {
                             .loadUsers();
                     break;
                 case ONE_USER:
-                    call = retrofit.create(RestAPIforUser.class)
+                    call = retrofit.create(RestAPI.class)
                             .loadUsers(new String(this.userModel.getUserName()));
                     break;
                 default:
@@ -151,11 +151,29 @@ public class Caller {
     }
 
 
+    /////////////////////////////////////////////////////
+    // Method download
+    ////////////////////////////////////////////////////
+    //-----Begin-----------------------------------------
+    public void download(){
+       switch (this.queryType){
+           case MORE_USERS:
+               downloadUsers();
+               break;
+           case ONE_USER:
+               downloadUser();
+               break;
+           default:
+               break;
+       }
+    }
+
 
     /////////////////////////////////////////////////////
     // Method download
     ////////////////////////////////////////////////////
-    public void download(){
+    //-----Begin-----------------------------------------
+    public void downloadUsers() {
         this.isDownloads = true;
         Call call = createCall(this.queryType);
 
@@ -165,8 +183,12 @@ public class Caller {
                     @Override
                     public void onResponse(Call<List<RetrofitModel>> call, Response<List<RetrofitModel>> response) {
                         if (response.isSuccessful()) {
-                            if (response != null) {
-                                listRetrofitModel.addAll(response.body());
+                            if (response.body() != null) {
+                                for (int i = 0; i < response.body().size(); i++){
+                                    RetrofitModel retrofitModel = response.body().get(i);
+                                    listRetrofitModel.add(retrofitModel);
+                                }
+//                                listRetrofitModel.addAll(response.body());
                                 setMessageInfo(ALL_GUT, null);
                             } else {
                                 setMessageInfo(NOT_LOADING_DATA, null);
@@ -188,8 +210,46 @@ public class Caller {
             setMessageInfo(NO_CONNECTED, null);
             isDownloads = false;
         }
+    }
+
+    public void downloadUser(){
+        this.isDownloads = true;
+        Call call = createCall(this.queryType);
+
+        if(isConnected()){
+            if(call != null) {
+                call.enqueue(new Callback<RetrofitModel>() {
+                    @Override
+                    public void onResponse(Call<RetrofitModel> call, Response<RetrofitModel> response) {
+                        if(response.isSuccessful()){
+                            if(response.body() != null){
+                                RetrofitModel rm = response.body();
+                                listRetrofitModel.add(rm);
+                                setMessageInfo(ALL_GUT, null);
+                            }else {
+                                setMessageInfo(NOT_LOADING_DATA, null);
+                            }
+                        }else {
+                            setMessageInfo(RESPONSE_ERROR, "" + response.code());
+                        }
+
+                        isDownloads = false;
+                    }
+
+                    @Override
+                    public void onFailure(Call<RetrofitModel> call, Throwable t) {
+                        setMessageInfo(ON_FAILURE, t.getMessage());
+                        isDownloads = false;
+                    }
+                });
+            }else isDownloads = false;
+        }else {
+            setMessageInfo(NO_CONNECTED, null);
+            isDownloads = false;
+        }
 
     }
+    //-----End-------------------------------------------
 
 
 }

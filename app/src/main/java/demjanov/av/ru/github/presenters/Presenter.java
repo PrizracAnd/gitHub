@@ -43,6 +43,7 @@ public class Presenter {
     public Presenter(@NonNull MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.context = mainActivity.getApplicationContext();
+
     }
 
     public Presenter(@NonNull MainActivity mainActivity, byte[] userName) {
@@ -69,6 +70,8 @@ public class Presenter {
     public void startLoadData(){
         if(this.userModel.getUserName().length > 0) {
             mainActivity.startLoad();
+
+            refreshListRetrofitModel();
 
             Completable completable = Completable.create(emitter -> {
                 Caller caller = new Caller(context, context.getResources().getString(R.string.baseUrl), Caller.ONE_USER, this.userModel, this.listRetrofitModel);
@@ -103,6 +106,15 @@ public class Presenter {
         }
     }
 
+    /////////////////////////////////////////////////////
+    // Method refreshListRetrofitModel
+    ////////////////////////////////////////////////////
+    private void refreshListRetrofitModel(){
+        if(this.listRetrofitModel != null && !this.listRetrofitModel.isEmpty()){
+            this.listRetrofitModel.removeAll(this.listRetrofitModel);
+            this.listRetrofitModel = new ArrayList<RetrofitModel>();
+        }
+    }
 
     /////////////////////////////////////////////////////
     // Method destroy
