@@ -72,12 +72,16 @@ public class Caller {
     // Constructor
     ////////////////////////////////////////////////////
 
-    public Caller(Context context, String baseUrl, int queryType, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
+    public Caller(Context context, String baseUrl, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
         this.context = context;
         this.baseUrl = baseUrl;
-        this.queryType = queryType;
         this.userModel = userModel;
         this.listRetrofitModel = listRetrofitModel;
+    }
+
+    public Caller(Context context, String baseUrl, int queryType, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
+        this(context, baseUrl, userModel, listRetrofitModel);
+        this.queryType = queryType;
     }
 
 
@@ -152,9 +156,10 @@ public class Caller {
 
 
     /////////////////////////////////////////////////////
-    // Methods download
+    // Method download
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
+    @Deprecated                                             //-- :-))) Почему бы нет?
     public void download(){
        switch (this.queryType){
            case MORE_USERS:
@@ -170,10 +175,11 @@ public class Caller {
 
 
     /////////////////////////////////////////////////////
-    // Method download
+    // Methods download
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
     public void downloadUsers() {
+        this.queryType = MORE_USERS;
         this.isDownloads = true;
         Call call = createCall(this.queryType);
 
@@ -213,6 +219,7 @@ public class Caller {
     }
 
     public void downloadUser(){
+        this.queryType = ONE_USER;
         this.isDownloads = true;
         Call call = createCall(this.queryType);
 

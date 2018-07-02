@@ -15,6 +15,7 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 public class RealmSupportDB {
@@ -26,6 +27,15 @@ public class RealmSupportDB {
     private Disposable disposable;
     private boolean isTransact = false;
     private boolean isSuccess;
+
+
+    /////////////////////////////////////////////////////
+    // Constructor
+    ////////////////////////////////////////////////////
+
+    public RealmSupportDB(Context context) {
+        this.context = context;
+    }
 
 
     /////////////////////////////////////////////////////
@@ -49,15 +59,25 @@ public class RealmSupportDB {
 
 
     /////////////////////////////////////////////////////
+    // Method init
+    ////////////////////////////////////////////////////
+    public void init(){
+        Realm.init(this.context);
+        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
+        Realm.setDefaultConfiguration(configuration);
+    }
+
+
+    /////////////////////////////////////////////////////
     // Methods insert
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
     public void insertUsersData(List<RetrofitModel> listUsers){
         this.isTransact = true;
         Completable completable = Completable.create(emitter ->{
-            String curLogin = "";
-            String curUserID = "";
-            String curAvatarUrl = "";
+            String curLogin;
+            String curUserID;
+            String curAvatarUrl;
             Realm realm = Realm.getDefaultInstance();
             for (RetrofitModel item : listUsers) {
                 curLogin = item.getLogin();

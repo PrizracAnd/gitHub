@@ -3,6 +3,8 @@ package demjanov.av.ru.github;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,11 +18,12 @@ import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import demjanov.av.ru.github.network.Caller;
 import demjanov.av.ru.github.presenters.Main_View;
 import demjanov.av.ru.github.presenters.Presenter;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, Main_View {
+public class MainActivity extends AppCompatActivity implements Main_View {
     @BindView(R.id.editText)                    //-- в 5 утра выбесил findViewById :-))
     EditText editText;
 
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Presenter presenter;
 
 
+
+    /////////////////////////////////////////////////////
+    // Method onCreate
+    ////////////////////////////////////////////////////
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,13 +54,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+
+    /////////////////////////////////////////////////////
+    // Method initializeElements
+    ////////////////////////////////////////////////////
     private void initializeElements() {
         ButterKnife.bind(this);
-        buttonLoad.setOnClickListener(this::onClick);
+//        buttonLoad.setOnClickListener(this::onClick);
 
         presenter = new Presenter(this);
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                setTextButtonLoad();
+            }
+        });
+
+        setTextButtonLoad();
     }
 
+
+    /////////////////////////////////////////////////////
+    // Method onDestroy
+    ////////////////////////////////////////////////////
+    @Override
+    public void onDestroy() {
+        this.presenter.destroy();
+
+        super.onDestroy();
+    }
+
+
+    /////////////////////////////////////////////////////
+    // Methods of interface Main_View
+    ////////////////////////////////////////////////////
+    //-----Begin-----------------------------------------
     @Override
     public void startLoad() {
         progressBar.setVisibility(View.VISIBLE);
@@ -86,27 +132,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
     @Override
-    public void setData() {
-        textView.setText(getResources().getString(R.string.user_id) + presenter.getDataUserID());
-        Glide.with(this)
-                .load(presenter.getDataUserAvatarUrl())
-                .into(imageView);
-        imageView.setVisibility(View.VISIBLE);
+    public void setData(int dataType) {
+        switch (dataType){
+            case Caller.ONE_USER:
+                textView.setText(getResources().getString(R.string.user_id) + presenter.getDataUserID());
+                Glide.with(this)
+                        .load(presenter.getDataUserAvatarUrl())
+                        .into(imageView);
+                imageView.setVisibility(View.VISIBLE);
+                break;
+            case Caller.MORE_USERS:
+                textView.setText(presenter.getDataUsers());
+                imageView.setVisibility(View.GONE);
+                break;
+        }
 
     }
+    //-----End-------------------------------------------
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btnLoad:
-                presenter.setUserName((editText.getText()).toString().getBytes());
-                presenter.startLoadData();
-                break;
-            default:
-                break;
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()){
+//            case R.id.btnLoad:
+//                presenter.setUserName((editText.getText()).toString().getBytes());
+//                presenter.startLoadData();
+//                break;
+//            default:
+//                break;
+//
+//        }
+//    }
 
+
+    /////////////////////////////////////////////////////
+    // Methods of buttonLoad
+    ////////////////////////////////////////////////////
+    //-----Begin-----------------------------------------
+    @OnClick(R.id.btnLoad)
+    private void onClickButtonLoad(){
+        presenter.setUserName((editText.getText()).toString().getBytes());
+        presenter.startLoadData();
+    }
+
+    private void setTextButtonLoad(){
+        if(editText.getText().toString().isEmpty()){
+            buttonLoad.setText(getResources().getString(R.string.download_users));
+        }else {
+            buttonLoad.setText(getResources().getString(R.string.download_page));
         }
     }
+    //-----End-------------------------------------------
 }

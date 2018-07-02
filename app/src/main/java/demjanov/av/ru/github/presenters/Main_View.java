@@ -9,5 +9,5 @@ public interface Main_View {
 
      void setError(int number, @Nullable String message);
 
-     void setData();
+     void setData(int dataType);
 }

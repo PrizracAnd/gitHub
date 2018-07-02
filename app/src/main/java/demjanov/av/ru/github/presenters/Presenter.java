@@ -9,6 +9,7 @@ import java.util.List;
 
 import demjanov.av.ru.github.MainActivity;
 import demjanov.av.ru.github.R;
+import demjanov.av.ru.github.db.RealmSupportDB;
 import demjanov.av.ru.github.models.RetrofitModel;
 import demjanov.av.ru.github.models.UserModel;
 import demjanov.av.ru.github.network.Caller;
@@ -33,6 +34,8 @@ public class Presenter {
 
     private Disposable disposable;
 
+    private RealmSupportDB realmSupportDB;
+
     //-----Class variables end---------------------------
 
     /////////////////////////////////////////////////////
@@ -43,6 +46,9 @@ public class Presenter {
     public Presenter(@NonNull MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.context = mainActivity.getApplicationContext();
+
+        this.realmSupportDB = new RealmSupportDB(this.context);
+        this.realmSupportDB.init();
 
     }
 
@@ -68,42 +74,53 @@ public class Presenter {
     // Method startLoadData
     ////////////////////////////////////////////////////
     public void startLoadData(){
-        if(this.userModel.getUserName().length > 0) {
-            mainActivity.startLoad();
+//        if(this.userModel.getUserName().length > 0) {
+        mainActivity.startLoad();
 
-            refreshListRetrofitModel();
+        refreshListRetrofitModel();
 
-            Completable completable = Completable.create(emitter -> {
-                Caller caller = new Caller(context, context.getResources().getString(R.string.baseUrl), Caller.ONE_USER, this.userModel, this.listRetrofitModel);
-                caller.download();
-                while (caller.isDownloads()) ;
+        Completable completable = Completable.create(emitter -> {
+            Caller caller = new Caller(context, context.getResources().getString(R.string.baseUrl), this.userModel, this.listRetrofitModel);
+//            caller.download();
+            if(this.userModel.getUserName().length > 0) {
+                caller.downloadUser();
+            }else {
+                caller.downloadUsers();
+            }
+            while (caller.isDownloads()) ;
 
-                if (caller.getCodeMessage() == Caller.ALL_GUT) {
-                    emitter.onComplete();
-                } else {
-                    this.messageType = caller.getCodeMessage();
-                    emitter.onError(new IOException(caller.getMessage()));
+            if (caller.getCodeMessage() == Caller.ALL_GUT) {
+                emitter.onComplete();
+            } else {
+                this.messageType = caller.getCodeMessage();
+                emitter.onError(new IOException(caller.getMessage()));
+            }
+
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+
+        this.disposable = completable.subscribeWith(new DisposableCompletableObserver() {
+            @Override
+            public void onComplete() {
+                mainActivity.endLoad();
+                if(listRetrofitModel.size() > 1) {
+                    mainActivity.setData(Caller.MORE_USERS);
+                    realmSupportDB.deleteAllUsers();
+                    realmSupportDB.insertUsersData(listRetrofitModel);
+                }else {
+                    mainActivity.setData(Caller.ONE_USER);
                 }
+            }
 
-            }).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread());
+            @Override
+            public void onError(Throwable e) {
+                mainActivity.endLoad();
+                mainActivity.setError(messageType, e.getMessage());
 
+            }
+        });
 
-            this.disposable = completable.subscribeWith(new DisposableCompletableObserver() {
-                @Override
-                public void onComplete() {
-                    mainActivity.endLoad();
-                    mainActivity.setData();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    mainActivity.endLoad();
-                    mainActivity.setError(messageType, e.getMessage());
-
-                }
-            });
-        }
     }
 
     /////////////////////////////////////////////////////
@@ -125,6 +142,8 @@ public class Presenter {
             this.disposable.dispose();
         }
 
+        this.realmSupportDB.destroy();
+
         this.userModel.shred();
     }
 
@@ -134,6 +153,20 @@ public class Presenter {
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
     //-----Get Data of user begin------------------------
+    public String getDataUsers(){
+        StringBuilder sb = new StringBuilder();
+
+        for (RetrofitModel item: this.listRetrofitModel){
+
+            sb.append(item.getLogin());
+            sb.append("\n");
+            sb.append(item.getId());
+            sb.append("\n\n");
+        }
+        sb.delete(sb.length() - 3, sb.length() - 1);
+        return sb.toString();
+    }
+
     public String getDataUserLogin(){
         if(this.listRetrofitModel.size() > 0){
             return this.listRetrofitModel.get(0).getLogin();
