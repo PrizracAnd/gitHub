@@ -19,9 +19,12 @@ import com.bumptech.glide.Glide;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import demjanov.av.ru.github.network.Caller;
 import demjanov.av.ru.github.presenters.Main_View;
 import demjanov.av.ru.github.presenters.Presenter;
+
+import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 public class MainActivity extends AppCompatActivity implements Main_View {
     @BindView(R.id.editText)                    //-- в 5 утра выбесил findViewById :-))
@@ -63,23 +66,6 @@ public class MainActivity extends AppCompatActivity implements Main_View {
 //        buttonLoad.setOnClickListener(this::onClick);
 
         presenter = new Presenter(this);
-
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                setTextButtonLoad();
-            }
-        });
 
         setTextButtonLoad();
     }
@@ -183,4 +169,13 @@ public class MainActivity extends AppCompatActivity implements Main_View {
         }
     }
     //-----End-------------------------------------------
+
+
+    /////////////////////////////////////////////////////
+    // Method afterTextChanged for editText
+    ////////////////////////////////////////////////////
+    @OnTextChanged(value = R.id.editText, callback = AFTER_TEXT_CHANGED)
+    public void afterTextChanged(Editable s) {
+        setTextButtonLoad();
+    }
 }
