@@ -2,7 +2,7 @@ package demjanov.av.ru.github.presenters;
 
 import android.support.annotation.Nullable;
 
-public interface Main_View {
+public interface MainView {
      void startLoad();
 
      void endLoad();

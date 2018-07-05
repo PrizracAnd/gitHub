@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.Component;
+import dagger.internal.DaggerCollections;
 import demjanov.av.ru.github.MainActivity;
 import demjanov.av.ru.github.R;
+import demjanov.av.ru.github.db.InjectorRealmInit;
 import demjanov.av.ru.github.db.RealmSupportDB;
 import demjanov.av.ru.github.models.RetrofitModel;
 import demjanov.av.ru.github.models.UserModel;
@@ -36,6 +39,8 @@ public class Presenter {
 
     private RealmSupportDB realmSupportDB;
 
+    private InjectorRealmInit injectorRealmInit;
+
     //-----Class variables end---------------------------
 
     /////////////////////////////////////////////////////
@@ -46,6 +51,9 @@ public class Presenter {
     public Presenter(@NonNull MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.context = mainActivity.getApplicationContext();
+
+
+
 
         this.realmSupportDB = new RealmSupportDB(this.context);
         this.realmSupportDB.init();

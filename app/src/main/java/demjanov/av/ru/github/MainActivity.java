@@ -21,12 +21,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import demjanov.av.ru.github.network.Caller;
-import demjanov.av.ru.github.presenters.Main_View;
+import demjanov.av.ru.github.presenters.MainView;
 import demjanov.av.ru.github.presenters.Presenter;
 
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
-public class MainActivity extends AppCompatActivity implements Main_View {
+public class MainActivity extends AppCompatActivity implements MainView {
     @BindView(R.id.editText)                    //-- в 5 утра выбесил findViewById :-))
     EditText editText;
 

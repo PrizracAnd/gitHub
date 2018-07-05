@@ -1,10 +1,9 @@
 package demjanov.av.ru.github.db;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import demjanov.av.ru.github.models.RetrofitModel;
@@ -16,15 +15,14 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
-public class RealmSupportDB {
+public class QueryUsers {
     private final static String REALM_DB = "REALM_DB:";
 
-    private Context context;
+    private Realm realm;
 
-    private List<RetrofitModel> retrofitModelList;
+    private RealmResults<RealmModelUser> modelUsersList;
     private Disposable disposable;
     private boolean isTransact = false;
     private boolean isSuccess;
@@ -34,8 +32,8 @@ public class RealmSupportDB {
     // Constructor
     ////////////////////////////////////////////////////
 
-    public RealmSupportDB(Context context) {
-        this.context = context;
+    public QueryUsers(Realm realm) {
+        this.realm = realm;
     }
 
 
@@ -44,8 +42,8 @@ public class RealmSupportDB {
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
 
-    public List<RetrofitModel> getRetrofitModelList() {
-        return retrofitModelList;
+    public RealmResults<RealmModelUser> getModelUsersList() {
+        return this.modelUsersList;
     }
 
     public boolean isTransact() {
@@ -60,17 +58,7 @@ public class RealmSupportDB {
 
 
     /////////////////////////////////////////////////////
-    // Method init
-    ////////////////////////////////////////////////////
-    public void init(){
-        Realm.init(this.context);
-        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
-        Realm.setDefaultConfiguration(configuration);
-    }
-
-
-    /////////////////////////////////////////////////////
-    // Methods insert
+    // Method insertUsersData
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
     public void insertUsersData(List<RetrofitModel> listUsers){
@@ -79,7 +67,7 @@ public class RealmSupportDB {
             String curLogin;
             String curUserID;
             String curAvatarUrl;
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = this.realm;
             for (RetrofitModel item : listUsers) {
                 curLogin = item.getLogin();
                 curUserID = item.getId();
@@ -103,17 +91,16 @@ public class RealmSupportDB {
                 .observeOn(AndroidSchedulers.mainThread());
         this.disposable = completable.subscribeWith(createObserver());
     }
-    //-----End-------------------------------------------
 
 
     /////////////////////////////////////////////////////
-    // Methods delete
+    // Method deleteAllUsers
     ////////////////////////////////////////////////////
-    //-----Begin-----------------------------------------
     public void deleteAllUsers(){
         this.isTransact = true;
         Completable completable = Completable.create(emitter -> {
-            try(Realm realm = Realm.getDefaultInstance()) {
+            Realm realm = this.realm;
+            try{
                 final RealmResults<RealmModelUser> listResults = realm.where(RealmModelUser.class).findAll();
                 realm.executeTransaction(realm1 -> listResults.deleteAllFromRealm());
                 emitter.onComplete();
@@ -124,39 +111,31 @@ public class RealmSupportDB {
                 .observeOn(AndroidSchedulers.mainThread());
         this.disposable = completable.subscribeWith(createObserver());
     }
-    //-----End-------------------------------------------
 
 
     /////////////////////////////////////////////////////
-    // Methods select
+    // Methods selectAllUsers
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
     public void selectAllUsers(){
         this.isTransact = true;
         Single single = Single.create(emitter -> {
-            try (Realm realm = Realm.getDefaultInstance()){
+            Realm realm = this.realm;
+            try {
                 RealmResults<RealmModelUser> listResult = realm.where(RealmModelUser.class).findAll();
-                List<RetrofitModel> retrofitModelList = new ArrayList<>();
-                for(RealmModelUser item: listResult){
-                    RetrofitModel retrofitModel = new RetrofitModel();
-                    retrofitModel.setLogin(item.getLogin());
-                    retrofitModel.setId(item.getId());
-                    retrofitModel.setAvatarUrl(item.getAvatarUrl());
-                    retrofitModelList.add(retrofitModel);
-                }
-                emitter.onSuccess(retrofitModelList);
+                emitter.onSuccess(listResult);
             }catch (Exception e){
                 emitter.onError(e);
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
-        this.disposable = (Disposable) single.subscribeWith(new DisposableSingleObserver<List<RetrofitModel>>() {
+        this.disposable = (Disposable) single.subscribeWith(new DisposableSingleObserver<RealmResults<RealmModelUser>>() {
 
 
             @Override
-            public void onSuccess(List<RetrofitModel> list) {
-                retrofitModelList = list;
+            public void onSuccess(RealmResults<RealmModelUser> list) {
+                modelUsersList = list;
                 isTransact = false;
                 isSuccess = true;
 
@@ -164,7 +143,7 @@ public class RealmSupportDB {
 
             @Override
             public void onError(Throwable e) {
-                retrofitModelList = null;
+                modelUsersList = null;
                 isTransact = false;
                 isSuccess = false;
                 Log.d(REALM_DB, e.getMessage());
@@ -206,7 +185,4 @@ public class RealmSupportDB {
             this.disposable.dispose();
         }
     }
-
-
-
 }
