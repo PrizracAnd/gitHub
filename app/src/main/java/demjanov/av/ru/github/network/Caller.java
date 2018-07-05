@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import demjanov.av.ru.github.models.RetrofitModel;
 import demjanov.av.ru.github.models.UserModel;
 import retrofit2.Call;
@@ -63,7 +65,10 @@ public class Caller {
 
 
     //-----Other variables begin-------------------------
-    boolean isDownloads;
+    private boolean isDownloads;
+
+    @Inject
+    RestAPI restAPI;
     //-----Other variables end---------------------------
 
 
@@ -77,6 +82,8 @@ public class Caller {
         this.baseUrl = baseUrl;
         this.userModel = userModel;
         this.listRetrofitModel = listRetrofitModel;
+
+        DaggerInjectorRestAPI.create().injectToCaller(this);
     }
 
     public Caller(Context context, String baseUrl, int queryType, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
@@ -119,22 +126,43 @@ public class Caller {
     // Method createCall
     ////////////////////////////////////////////////////
     @Nullable
+//    private Call createCall(int callNumber){
+//        Call call;
+//        try {
+//            Retrofit retrofit = null;
+//            retrofit = new Retrofit.Builder()
+//                    .baseUrl(baseUrl)
+//                    .addConverterFactory(GsonConverterFactory.create())
+//                    .build();
+//            switch (callNumber) {
+//                case MORE_USERS:
+//                    call = retrofit.create(RestAPI.class)
+//                            .loadUsers();
+//                    break;
+//                case ONE_USER:
+//                    call = retrofit.create(RestAPI.class)
+//                            .loadUsers(new String(this.userModel.getUserName()));
+//                    break;
+//                default:
+//                    setMessageInfo(NO_CALL, null);
+//                    return null;
+//            }
+//        }catch (Exception e){
+//            setMessageInfo(NO_RETROFIT, e.getMessage());
+//            return null;
+//        }
+//
+//        return call;
+//    }
     private Call createCall(int callNumber){
         Call call;
         try {
-            Retrofit retrofit = null;
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
             switch (callNumber) {
                 case MORE_USERS:
-                    call = retrofit.create(RestAPI.class)
-                            .loadUsers();
+                    call = this.restAPI.loadUsers();
                     break;
                 case ONE_USER:
-                    call = retrofit.create(RestAPI.class)
-                            .loadUsers(new String(this.userModel.getUserName()));
+                    call = this.restAPI.loadUsers(new String(this.userModel.getUserName()));
                     break;
                 default:
                     setMessageInfo(NO_CALL, null);

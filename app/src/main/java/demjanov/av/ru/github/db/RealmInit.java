@@ -25,7 +25,7 @@ public class RealmInit {
     }
 
     @Provides
-    RealmInit getRealmInit(Context context){
+    RealmInit getRealmInit(){
         return this;
     }
 }

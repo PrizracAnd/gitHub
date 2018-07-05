@@ -7,11 +7,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import dagger.Component;
 import dagger.internal.DaggerCollections;
 import demjanov.av.ru.github.MainActivity;
 import demjanov.av.ru.github.R;
+import demjanov.av.ru.github.db.DaggerInjectorRealmInit;
 import demjanov.av.ru.github.db.InjectorRealmInit;
+import demjanov.av.ru.github.db.RealmInit;
 import demjanov.av.ru.github.db.RealmSupportDB;
 import demjanov.av.ru.github.models.RetrofitModel;
 import demjanov.av.ru.github.models.UserModel;
@@ -21,6 +25,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 
 public class Presenter {
 
@@ -39,7 +44,9 @@ public class Presenter {
 
     private RealmSupportDB realmSupportDB;
 
-    private InjectorRealmInit injectorRealmInit;
+    @Inject
+    RealmInit realmInit;
+    private Realm realm;
 
     //-----Class variables end---------------------------
 
@@ -53,10 +60,13 @@ public class Presenter {
         this.context = mainActivity.getApplicationContext();
 
 
+        DaggerInjectorRealmInit.create().injectToPresenter(this);
+        this.realmInit.init(this.context);
+        this.realm = this.realmInit.getRealm();
 
 
-        this.realmSupportDB = new RealmSupportDB(this.context);
-        this.realmSupportDB.init();
+        this.realmSupportDB = new RealmSupportDB(this.context); //FIXME перейти на новый класс запросов
+//        this.realmSupportDB.init();
 
     }
 

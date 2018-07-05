@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
     @OnClick(R.id.btnLoad)
-    private void onClickButtonLoad(){
+    void onClickButtonLoad(){
         presenter.setUserName((editText.getText()).toString().getBytes());
         presenter.startLoadData();
     }
