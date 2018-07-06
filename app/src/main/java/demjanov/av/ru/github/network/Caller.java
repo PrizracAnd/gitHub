@@ -1,7 +1,6 @@
 package demjanov.av.ru.github.network;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.Nullable;
 
@@ -12,11 +11,10 @@ import javax.inject.Inject;
 
 import demjanov.av.ru.github.models.RetrofitModel;
 import demjanov.av.ru.github.models.UserModel;
+import demjanov.av.ru.github.presenters.ContextProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Caller {
 
@@ -69,6 +67,8 @@ public class Caller {
 
     @Inject
     RestAPI restAPI;
+    @Inject
+    NetworkInfo networkInfo;
     //-----Other variables end---------------------------
 
 
@@ -76,14 +76,17 @@ public class Caller {
     /////////////////////////////////////////////////////
     // Constructor
     ////////////////////////////////////////////////////
-
+    //FIXME почистить конструкторы от ненужных переменных
     public Caller(Context context, String baseUrl, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
         this.context = context;
         this.baseUrl = baseUrl;
         this.userModel = userModel;
         this.listRetrofitModel = listRetrofitModel;
 
-        DaggerInjectorRestAPI.create().injectToCaller(this);
+        DaggerInjectorToCaller.builder()
+                .contextProvider(new ContextProvider(context))
+                .build()
+                .injectToCaller(this);
     }
 
     public Caller(Context context, String baseUrl, int queryType, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
@@ -177,8 +180,6 @@ public class Caller {
     }
 
     private boolean isConnected(){
-        NetworkInfo networkInfo = ((ConnectivityManager)context
-                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
 

@@ -4,6 +4,6 @@ import dagger.Component;
 import demjanov.av.ru.github.presenters.Presenter;
 
 @Component(modules = {RealmInit.class})
-public interface InjectorRealmInit {
+public interface InjectorRealm {
     void injectToPresenter(Presenter presenter);
 }
