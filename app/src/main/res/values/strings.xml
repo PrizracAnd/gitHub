@@ -7,4 +7,6 @@
     <string name="not_loading_data">No loading data</string>
     <string name="user_id">UserID:</string>
     <string name="download_users">Download users</string>
+    <string name="todo">TODO</string>
+    <string name="avatars_image">Avatars image</string>
 </resources>

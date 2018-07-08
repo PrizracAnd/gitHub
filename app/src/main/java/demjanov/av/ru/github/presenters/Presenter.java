@@ -10,7 +10,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import demjanov.av.ru.github.MainActivity;
-import demjanov.av.ru.github.R;
 import demjanov.av.ru.github.db.DaggerInjectorRealm;
 import demjanov.av.ru.github.db.RealmSupportDB;
 import demjanov.av.ru.github.models.RetrofitModel;
@@ -94,10 +93,10 @@ public class Presenter {
         refreshListRetrofitModel();
 
         Completable completable = Completable.create(emitter -> {
-            Caller caller = new Caller(context, context.getResources().getString(R.string.baseUrl), this.userModel, this.listRetrofitModel);
+            Caller caller = new Caller(context, this.listRetrofitModel);
 //            caller.download();
             if(this.userModel.getUserName().length > 0) {
-                caller.downloadUser();
+                caller.downloadUser(new String(this.userModel.getUserName()));
             }else {
                 caller.downloadUsers();
             }

@@ -54,10 +54,7 @@ public class Caller {
 
 
     //-----Class variables begin-------------------------
-    private Context context;
-    private String baseUrl;
     private int queryType;
-    private UserModel userModel;
     private List<RetrofitModel> listRetrofitModel;
     //-----Class variables end---------------------------
 
@@ -77,10 +74,7 @@ public class Caller {
     // Constructor
     ////////////////////////////////////////////////////
     //FIXME почистить конструкторы от ненужных переменных
-    public Caller(Context context, String baseUrl, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
-        this.context = context;
-        this.baseUrl = baseUrl;
-        this.userModel = userModel;
+    public Caller(Context context, List<RetrofitModel> listRetrofitModel) {
         this.listRetrofitModel = listRetrofitModel;
 
         DaggerInjectorToCaller.builder()
@@ -89,8 +83,8 @@ public class Caller {
                 .injectToCaller(this);
     }
 
-    public Caller(Context context, String baseUrl, int queryType, UserModel userModel, List<RetrofitModel> listRetrofitModel) {
-        this(context, baseUrl, userModel, listRetrofitModel);
+    public Caller(Context context, int queryType, List<RetrofitModel> listRetrofitModel) {
+        this(context, listRetrofitModel);
         this.queryType = queryType;
     }
 
@@ -101,7 +95,10 @@ public class Caller {
     //-----Begin-----------------------------------------
 
     public int getCodeMessage() {
-        return codeMessage;
+        if(this.codeMessage == ALL_GUT){
+            setMessageInfo(0, null);
+            return ALL_GUT;
+        }else return codeMessage;
     }
 
     @Nullable
@@ -157,7 +154,7 @@ public class Caller {
 //
 //        return call;
 //    }
-    private Call createCall(int callNumber){
+    private Call createCall(int callNumber, @Nullable String userName){
         Call call;
         try {
             switch (callNumber) {
@@ -165,7 +162,7 @@ public class Caller {
                     call = this.restAPI.loadUsers();
                     break;
                 case ONE_USER:
-                    call = this.restAPI.loadUsers(new String(this.userModel.getUserName()));
+                    call = this.restAPI.loadUsers(userName);
                     break;
                 default:
                     setMessageInfo(NO_CALL, null);
@@ -189,13 +186,13 @@ public class Caller {
     ////////////////////////////////////////////////////
     //-----Begin-----------------------------------------
     @Deprecated                                             //-- :-))) Почему бы нет?
-    public void download(){
+    public void download(@Nullable String userName){
        switch (this.queryType){
            case MORE_USERS:
                downloadUsers();
                break;
            case ONE_USER:
-               downloadUser();
+               downloadUser(userName);
                break;
            default:
                break;
@@ -210,7 +207,7 @@ public class Caller {
     public void downloadUsers() {
         this.queryType = MORE_USERS;
         this.isDownloads = true;
-        Call call = createCall(this.queryType);
+        Call call = createCall(this.queryType, null);
 
         if(isConnected()){
             if(call != null) {
@@ -247,10 +244,10 @@ public class Caller {
         }
     }
 
-    public void downloadUser(){
+    public void downloadUser(String userName){
         this.queryType = ONE_USER;
         this.isDownloads = true;
-        Call call = createCall(this.queryType);
+        Call call = createCall(this.queryType, userName);
 
         if(isConnected()){
             if(call != null) {
