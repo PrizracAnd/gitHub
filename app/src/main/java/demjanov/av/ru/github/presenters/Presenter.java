@@ -86,55 +86,55 @@ public class Presenter {
     /////////////////////////////////////////////////////
     // Method startLoadData
     ////////////////////////////////////////////////////
-    public void startLoadData(){
-//        if(this.userModel.getUserName().length > 0) {
-        mainActivity.startLoad();
-
-        refreshListRetrofitModel();
-
-        Completable completable = Completable.create(emitter -> {
-            Caller caller = new Caller(context, this.listRetrofitModel);
-//            caller.download();
-            if(this.userModel.getUserName().length > 0) {
-                caller.downloadUser(new String(this.userModel.getUserName()));
-            }else {
-                caller.downloadUsers();
-            }
-            while (caller.isDownloads()) ;
-
-            if (caller.getCodeMessage() == Caller.ALL_GUT) {
-                emitter.onComplete();
-            } else {
-                this.messageType = caller.getCodeMessage();
-                emitter.onError(new IOException(caller.getMessage()));
-            }
-
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-
-
-        this.disposable = completable.subscribeWith(new DisposableCompletableObserver() {
-            @Override
-            public void onComplete() {
-                mainActivity.endLoad();
-                if(listRetrofitModel.size() > 1) {
-                    mainActivity.setData(Caller.MORE_USERS);
-                    realmSupportDB.deleteAllUsers();
-                    realmSupportDB.insertUsersData(listRetrofitModel);
-                }else {
-                    mainActivity.setData(Caller.ONE_USER);
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mainActivity.endLoad();
-                mainActivity.setError(messageType, e.getMessage());
-
-            }
-        });
-
-    }
+//    public void startLoadData(){
+////        if(this.userModel.getUserName().length > 0) {
+//        mainActivity.startLoad();
+//
+//        refreshListRetrofitModel();
+//
+//        Completable completable = Completable.create(emitter -> {
+//            Caller caller = new Caller(context, this.listRetrofitModel);
+////            caller.download();
+//            if(this.userModel.getUserName().length > 0) {
+//                caller.downloadUser(new String(this.userModel.getUserName()));
+//            }else {
+//                caller.downloadUsers();
+//            }
+//            while (caller.isDownloads()) ;
+//
+//            if (caller.getCodeMessage() == Caller.ALL_GUT) {
+//                emitter.onComplete();
+//            } else {
+//                this.messageType = caller.getCodeMessage();
+//                emitter.onError(new IOException(caller.getMessage()));
+//            }
+//
+//        }).subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread());
+//
+//
+//        this.disposable = completable.subscribeWith(new DisposableCompletableObserver() {
+//            @Override
+//            public void onComplete() {
+//                mainActivity.endLoad();
+//                if(listRetrofitModel.size() > 1) {
+//                    mainActivity.setData(Caller.MORE_USERS);
+//                    realmSupportDB.deleteAllUsers();
+//                    realmSupportDB.insertUsersData(listRetrofitModel);
+//                }else {
+//                    mainActivity.setData(Caller.ONE_USER);
+//                }
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                mainActivity.endLoad();
+//                mainActivity.setError(messageType, e.getMessage());
+//
+//            }
+//        });
+//
+//    }
 
     /////////////////////////////////////////////////////
     // Method refreshListRetrofitModel

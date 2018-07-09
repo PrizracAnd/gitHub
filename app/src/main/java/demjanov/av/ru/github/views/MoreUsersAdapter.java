@@ -22,7 +22,7 @@ public class MoreUsersAdapter extends RecyclerView.Adapter<MoreUsersAdapter.MyVi
     private MoreUsersFragment moreUsersFragment;
 
     interface MoreUsersCall{
-        void onCallUser(String id);
+        void onCallUser(String userName);
     }
 
     public MoreUsersAdapter(RealmResults<RealmModelUser> moreUsers, MoreUsersFragment moreUsersFragment) {
@@ -53,7 +53,7 @@ public class MoreUsersAdapter extends RecyclerView.Adapter<MoreUsersAdapter.MyVi
         return this.moreUsers.size();
     }
 
-    public int getCarrentPosition(){
+    public int getCurrentPosition(){
         return mvh.getSelectedPosition();
     }
 
@@ -64,7 +64,7 @@ public class MoreUsersAdapter extends RecyclerView.Adapter<MoreUsersAdapter.MyVi
     }
 
     private void supportClickItem(){
-        this.moreUsersFragment.onCallUser(this.moreUsers.get(getCarrentPosition()).getId());
+        this.moreUsersFragment.onCallUser(this.moreUsers.get(getCurrentPosition()).getLogin());
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -86,7 +86,7 @@ public class MoreUsersAdapter extends RecyclerView.Adapter<MoreUsersAdapter.MyVi
         }
 
         @OnClick(R.id.more_users_item)
-        public void onClicItem(){
+        public void onClickItem(){
             supportClickItem();
         }
 

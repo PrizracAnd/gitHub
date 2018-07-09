@@ -2,6 +2,7 @@ package demjanov.av.ru.github.network;
 
 import android.content.Context;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 
@@ -15,6 +16,8 @@ import demjanov.av.ru.github.presenters.ContextProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Caller {
 
@@ -73,7 +76,7 @@ public class Caller {
     /////////////////////////////////////////////////////
     // Constructor
     ////////////////////////////////////////////////////
-    //FIXME почистить конструкторы от ненужных переменных
+
     public Caller(Context context, List<RetrofitModel> listRetrofitModel) {
         this.listRetrofitModel = listRetrofitModel;
 
@@ -126,12 +129,12 @@ public class Caller {
     // Method createCall
     ////////////////////////////////////////////////////
     @Nullable
-//    private Call createCall(int callNumber){
+//    private Call createCall(int callNumber, @Nullable String userName){
 //        Call call;
 //        try {
 //            Retrofit retrofit = null;
 //            retrofit = new Retrofit.Builder()
-//                    .baseUrl(baseUrl)
+//                    .baseUrl("https://api.github.com")
 //                    .addConverterFactory(GsonConverterFactory.create())
 //                    .build();
 //            switch (callNumber) {
@@ -141,7 +144,7 @@ public class Caller {
 //                    break;
 //                case ONE_USER:
 //                    call = retrofit.create(RestAPI.class)
-//                            .loadUsers(new String(this.userModel.getUserName()));
+//                            .loadUser(userName);
 //                    break;
 //                default:
 //                    setMessageInfo(NO_CALL, null);
@@ -162,7 +165,7 @@ public class Caller {
                     call = this.restAPI.loadUsers();
                     break;
                 case ONE_USER:
-                    call = this.restAPI.loadUsers(userName);
+                    call = this.restAPI.loadUser(userName);
                     break;
                 default:
                     setMessageInfo(NO_CALL, null);
@@ -207,13 +210,13 @@ public class Caller {
     public void downloadUsers() {
         this.queryType = MORE_USERS;
         this.isDownloads = true;
-        Call call = createCall(this.queryType, null);
+        Call call = createCall(MORE_USERS, null);
 
         if(isConnected()){
             if(call != null) {
                 call.enqueue(new Callback<List<RetrofitModel>>() {
                     @Override
-                    public void onResponse(Call<List<RetrofitModel>> call, Response<List<RetrofitModel>> response) {
+                    public void onResponse(@NonNull Call<List<RetrofitModel>> call, @NonNull Response<List<RetrofitModel>> response) {
                         if (response.isSuccessful()) {
                             if (response.body() != null) {
                                 for (int i = 0; i < response.body().size(); i++){
@@ -242,6 +245,8 @@ public class Caller {
             setMessageInfo(NO_CONNECTED, null);
             isDownloads = false;
         }
+
+
     }
 
     public void downloadUser(String userName){

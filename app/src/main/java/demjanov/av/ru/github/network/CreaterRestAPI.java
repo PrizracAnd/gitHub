@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class CreaterRestAPI {
-    public final static String BASE_URL = "https://api.github.com";
+    public final static String BASE_URL = "https://api.github.com/";
     @Provides
     RestAPI getRestAPI(){
         Retrofit retrofit = null;
