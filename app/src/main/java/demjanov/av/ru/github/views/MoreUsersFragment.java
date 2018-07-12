@@ -25,6 +25,7 @@ public class MoreUsersFragment extends Fragment implements MoreUsersAdapter.More
     @BindView(R.id.progressBarMore)
     ProgressBar progressBar;
 
+    private View view;
     private PresenterMoreUsers presenter;
     private MoreUsersAdapter myAdapter;
     private ClickListenerUsers mainActivity;
@@ -42,11 +43,19 @@ public class MoreUsersFragment extends Fragment implements MoreUsersAdapter.More
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_more_users, viewGroup, false);
+        this.view = inflater.inflate(R.layout.fragment_more_users, viewGroup, false);
+//        ButterKnife.bind(view);
 
-        initializeElements(view);
 
         return view;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        initializeElements(this.view);
     }
 
 
@@ -55,7 +64,10 @@ public class MoreUsersFragment extends Fragment implements MoreUsersAdapter.More
     // Method initializeElements
     ////////////////////////////////////////////////////
     private void initializeElements(View view) {
-        ButterKnife.bind(view);
+//        ButterKnife.bind(this.getActivity());
+
+        progressBar = (ProgressBar)view.findViewById(R.id.progressBarMore);
+        recyclerView = (RecyclerView)view.findViewById(R.id.more_users_recycle);
 
         //---Presenter_begin---
         this.presenter = new PresenterMoreUsers(this, view.getContext());
