@@ -45,18 +45,23 @@ public class OneUsersFragment extends Fragment implements MainView {
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState){
         this.rootView = inflater.inflate(R.layout.fragment_one_users, viewGroup, false);
 
-        initializeElements(this.rootView);
-
         return this.rootView;
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        initializeElements(this.rootView);
+    }
 
 
     /////////////////////////////////////////////////////
     // Method initializeElements
     ////////////////////////////////////////////////////
     private void initializeElements(View view) {
-        ButterKnife.bind(view);
+        ButterKnife.bind(this, view);
 
         presenter = new PresenterOneUser(this, view.getContext());
         presenter.startLoadData(this.userName);
