@@ -11,13 +11,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import demjanov.av.ru.github.models.RetrofitModel;
-import demjanov.av.ru.github.models.UserModel;
 import demjanov.av.ru.github.presenters.ContextProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Caller {
 

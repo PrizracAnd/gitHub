@@ -20,8 +20,4 @@ public class RealmInit {
         return Realm.getDefaultInstance();
     }
 
-//    @Provides
-//    RealmInit getRealmInit(){
-//        return this;
-//    }
 }

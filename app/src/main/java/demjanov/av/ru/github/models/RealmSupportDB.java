@@ -1,4 +1,4 @@
-package demjanov.av.ru.github.db;
+package demjanov.av.ru.github.models;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import demjanov.av.ru.github.db.RealmModelUser;
 import demjanov.av.ru.github.models.RetrofitModel;
 import io.reactivex.Completable;
 import io.reactivex.Single;
