@@ -30,6 +30,8 @@ public class MoreUsersFragment extends Fragment implements MoreUsersAdapter.More
     private MoreUsersAdapter myAdapter;
     private ClickListenerUsers mainActivity;
 
+    private boolean isInitializeRecycler = false;
+
     public interface ClickListenerUsers{
         void onClickUsers(String userName);
     }
@@ -72,14 +74,24 @@ public class MoreUsersFragment extends Fragment implements MoreUsersAdapter.More
 
 
         //---RecyclerView_begin---
-        LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
-        myAdapter = new MoreUsersAdapter(this.presenter.getResults(), this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(myAdapter);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+//        myAdapter = new MoreUsersAdapter(this.presenter.getResults(), this);
+//        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView.setAdapter(myAdapter);
         //---RecyclerView_end---
 
     }
 
+    /////////////////////////////////////////////////////
+    // Method initializeRecycler
+    ////////////////////////////////////////////////////
+    private void initializeRecycler(View view){
+        this.isInitializeRecycler = true;
+        LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        myAdapter = new MoreUsersAdapter(this.presenter.getResults(), this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(myAdapter);
+    }
 
     /////////////////////////////////////////////////////
     // Methods of interfaces
@@ -98,6 +110,8 @@ public class MoreUsersFragment extends Fragment implements MoreUsersAdapter.More
 
     @Override
     public void endLoad() {
+        if(!this.isInitializeRecycler) initializeRecycler(this.view);
+
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 

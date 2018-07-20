@@ -131,8 +131,8 @@ public class PresenterMoreUsers {
     private void refreshListRetrofitModel(){
         if(this.listRetrofitModel != null && !this.listRetrofitModel.isEmpty()){
             this.listRetrofitModel.removeAll(this.listRetrofitModel);
-            this.listRetrofitModel = new ArrayList<RetrofitModel>();
         }
+        this.listRetrofitModel = new ArrayList<RetrofitModel>();
     }
 
 
